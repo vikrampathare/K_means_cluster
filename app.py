@@ -15,7 +15,7 @@ app.config['PROCESSED_FOLDER'] = 'processed'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Configure Gemini API
-GEMINI_API_KEY = "AIzaSyD489LEg0ZpcCh9nzYHk5-j-NX-SF4PqoE"
+GEMINI_API_KEY = "AIzaSZpcCIsThisTheKEyX-SF4PqoE"
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Allowed file extensions
