@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="mb-0">
+            <i class="fas fa-palette me-3"></i>
+            k-Means Color Clustering
+        </h1>
+        <p class="mb-0 mt-2 opacity-75">Transform your images into beautiful cartoonified versions using unsupervised learning!</p>
+    </div>
+    <div class="card-body p-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <div class="mb-4">
+                        <label for="file" class="form-label">
+                            <i class="fas fa-image me-2"></i>Choose an Image
+                        </label>
+                        <input type="file" class="form-control" id="file" name="file" accept="image/*" required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Supported formats: PNG, JPG, JPEG, GIF, BMP (Max size: 16MB)
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="k_value" class="form-label">
+                            <i class="fas fa-sliders-h me-2"></i>Number of Color Clusters (k)
+                        </label>
+                        <select class="form-select" id="k_value" name="k_value">
+                            <option value="2">2 Colors - Minimal</option>
+                            <option value="3" selected>3 Colors - Simple</option>
+                            <option value="4">4 Colors - Balanced</option>
+                            <option value="5">5 Colors - Detailed</option>
+                            <option value="6">6 Colors - Rich</option>
+                            <option value="8">8 Colors - Complex</option>
+                        </select>
+                        <div class="form-text">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Lower values create more cartoon-like effects, higher values preserve more detail
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-magic me-2"></i>
+                            Cartoonify Image
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="text-center">
+                    <h4 class="text-muted mb-3">
+                        <i class="fas fa-brain me-2"></i>How it Works
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3">
+                                <i class="fas fa-upload fa-2x text-primary mb-2"></i>
+                                <h6>1. Upload Image</h6>
+                                <small class="text-muted">Choose any image from your device</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3">
+                                <i class="fas fa-cogs fa-2x text-primary mb-2"></i>
+                                <h6>2. k-Means Clustering</h6>
+                                <small class="text-muted">Algorithm groups similar colors together</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3">
+                                <i class="fas fa-image fa-2x text-primary mb-2"></i>
+                                <h6>3. Cartoonified Result</h6>
+                                <small class="text-muted">Get a simplified, artistic version</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        submitBtn.disabled = true;
+    });
+    
+    document.getElementById('file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const fileSize = file.size / 1024 / 1024; // Convert to MB
+            if (fileSize > 16) {
+                alert('File size must be less than 16MB');
+                e.target.value = '';
+            }
+        }
+    });
+</script>
+{% endblock %}

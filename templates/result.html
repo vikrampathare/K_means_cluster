@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1 class="mb-0">
+            <i class="fas fa-check-circle me-3"></i>
+            Cartoonification Complete!
+        </h1>
+        <p class="mb-0 mt-2 opacity-75">Your image has been processed with {{ k_value }} color clusters</p>
+    </div>
+    <div class="card-body p-4">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="text-center">
+                    <h4 class="mb-3">
+                        <i class="fas fa-image me-2 text-muted"></i>Original Image
+                    </h4>
+                    <div class="image-container">
+                        <img src="{{ original_image }}" class="img-fluid" alt="Original Image" style="max-height: 400px; width: auto;">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="text-center">
+                    <h4 class="mb-3">
+                        <i class="fas fa-palette me-2 text-primary"></i>Cartoonified ({{ k_value }} colors)
+                    </h4>
+                    <div class="image-container">
+                        <img src="{{ processed_image }}" class="img-fluid" alt="Processed Image" style="max-height: 400px; width: auto;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="text-center">
+                    <div class="alert alert-info d-inline-block">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Algorithm Used:</strong> k-Means Clustering with {{ k_value }} clusters
+                        <br>
+                        <small>Each pixel was assigned to the nearest cluster center, creating the cartoon effect</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="/" class="btn btn-primary me-3">
+                    <i class="fas fa-upload me-2"></i>
+                    Try Another Image
+                </a>
+                <button class="btn btn-outline-primary" onclick="downloadImage()">
+                    <i class="fas fa-download me-2"></i>
+                    Download Result
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat Interface Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0" style="background: rgba(255,255,255,0.9);">
+                    <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        <h4 class="mb-0 text-white text-center">
+                            <i class="fas fa-comments me-2"></i>
+                            Ask Gemini About Your Image
+                        </h4>
+                        <p class="mb-0 mt-2 text-white-50 text-center">Ask questions about your cartoonified image and the k-means clustering process!</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8 mx-auto">
+                                <div class="mb-3">
+                                    <label for="chatQuestion" class="form-label">
+                                        <i class="fas fa-question-circle me-2"></i>Your Question
+                                    </label>
+                                    <textarea class="form-control" id="chatQuestion" rows="3" 
+                                              placeholder="Ask about the image, colors, clustering process, or machine learning concepts..."
+                                              style="border-radius: 10px;"></textarea>
+                                </div>
+                                <div class="text-center mb-3">
+                                    <button type="button" class="btn btn-success" id="askGemini" style="border-radius: 25px; padding: 0.75rem 2rem;">
+                                        <i class="fas fa-robot me-2"></i>
+                                        Ask Gemini
+                                    </button>
+                                </div>
+                                
+                                <!-- Chat Response Area -->
+                                <div id="chatResponse" class="d-none">
+                                    <div class="alert alert-success" style="border-radius: 10px;">
+                                        <h6 class="mb-2">
+                                            <i class="fas fa-robot me-2"></i>
+                                            Gemini's Response:
+                                        </h6>
+                                        <div id="responseText"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Loading Indicator -->
+                                <div id="chatLoading" class="d-none text-center">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Gemini is analyzing your image...</p>
+                                </div>
+                                
+                                <!-- Example Questions -->
+                                <div class="mt-3">
+                                    <h6 class="text-muted mb-2">
+                                        <i class="fas fa-lightbulb me-2"></i>
+                                        Example Questions:
+                                    </h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button class="btn btn-outline-success btn-sm example-question" data-question="What colors are dominant in this cartoonified image?">
+                                            What colors are dominant?
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm example-question" data-question="How does k-means clustering work in this image?">
+                                            How does k-means work here?
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm example-question" data-question="What would happen if I used a different k value?">
+                                            Different k values?
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm example-question" data-question="Explain the machine learning concepts behind this transformation.">
+                                            ML concepts explained
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="text-center">
+                    <h5 class="text-muted mb-3">
+                        <i class="fas fa-lightbulb me-2"></i>Try Different Settings
+                    </h5>
+                    <p class="text-muted">
+                        Experiment with different k values to see how they affect the cartoonification:
+                    </p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <form action="/upload" method="post" enctype="multipart/form-data" class="d-flex align-items-center justify-content-center gap-3">
+                                <input type="hidden" name="file_path" value="{{ filename }}">
+                                <label for="new_k" class="form-label mb-0">Try k =</label>
+                                <select class="form-select" id="new_k" name="k_value" style="width: auto;">
+                                    <option value="2" {% if k_value == 2 %}selected{% endif %}>2</option>
+                                    <option value="3" {% if k_value == 3 %}selected{% endif %}>3</option>
+                                    <option value="4" {% if k_value == 4 %}selected{% endif %}>4</option>
+                                    <option value="5" {% if k_value == 5 %}selected{% endif %}>5</option>
+                                    <option value="6" {% if k_value == 6 %}selected{% endif %}>6</option>
+                                    <option value="8" {% if k_value == 8 %}selected{% endif %}>8</option>
+                                </select>
+                                <small class="text-muted">(Re-upload the same image with different k value)</small>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Template variables
+    const K_VALUE = {{ k_value }};
+    
+    function downloadImage() {
+        const processedImage = document.querySelector('img[alt="Processed Image"]');
+        const link = document.createElement('a');
+        link.download = 'cartoonified_k{{ k_value }}_{{ filename }}';
+        link.href = processedImage.src;
+        link.click();
+    }
+    
+    // Chat functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const askButton = document.getElementById('askGemini');
+        const questionTextarea = document.getElementById('chatQuestion');
+        const chatResponse = document.getElementById('chatResponse');
+        const responseText = document.getElementById('responseText');
+        const chatLoading = document.getElementById('chatLoading');
+        const exampleButtons = document.querySelectorAll('.example-question');
+        
+        // Handle example question clicks
+        exampleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const question = this.getAttribute('data-question');
+                questionTextarea.value = question;
+            });
+        });
+        
+        // Handle ask button click
+        askButton.addEventListener('click', function() {
+            const question = questionTextarea.value.trim();
+            
+            if (!question) {
+                alert('Please enter a question first!');
+                return;
+            }
+            
+            // Show loading, hide response
+            chatLoading.classList.remove('d-none');
+            chatResponse.classList.add('d-none');
+            askButton.disabled = true;
+            askButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Asking Gemini...';
+            
+            // Get the processed image data
+            const processedImageSrc = document.querySelector('img[alt="Processed Image"]').src;
+            
+            // Send request to chat endpoint
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    question: question,
+                    image_data: processedImageSrc,
+                    k_value: K_VALUE
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading
+                chatLoading.classList.add('d-none');
+                askButton.disabled = false;
+                askButton.innerHTML = '<i class="fas fa-robot me-2"></i>Ask Gemini';
+                
+                if (data.success) {
+                    // Show response
+                    responseText.innerHTML = data.response.replace(/\n/g, '<br>');
+                    chatResponse.classList.remove('d-none');
+                } else {
+                    // Show error
+                    responseText.innerHTML = '<div class="text-danger">Error: ' + data.error + '</div>';
+                    chatResponse.classList.remove('d-none');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                chatLoading.classList.add('d-none');
+                askButton.disabled = false;
+                askButton.innerHTML = '<i class="fas fa-robot me-2"></i>Ask Gemini';
+                
+                responseText.innerHTML = '<div class="text-danger">Error: Failed to connect to Gemini. Please try again.</div>';
+                chatResponse.classList.remove('d-none');
+            });
+        });
+        
+        // Allow Enter key to submit (Shift+Enter for new line)
+        questionTextarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                askButton.click();
+            }
+        });
+    });
+</script>
+{% endblock %}
